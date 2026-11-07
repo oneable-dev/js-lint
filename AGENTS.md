@@ -22,6 +22,7 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 
 - Custom JS rules cannot use type information. Type-aware checks are only possible with oxlint's built-in rules (via `oxlint-tsgolint`).
 - `options` (`typeAware`, `reportUnusedDisableDirectives`) work from presets through `extends` (verified with oxlint 1.92.0), even though the schema says "root configuration only". They do not work in nested configs inside subdirectories.
+- A rule set in a higher preset replaces its options from lower presets; they do not merge. Shared option values (e.g. `no-restricted-imports` patterns) live in `src/presets/restricted-imports.ts` so each layer can repeat them.
 - Presets reference this plugin by package name (`jsPlugins: ["@oneable/js-lint"]`), not by path, so they work from `node_modules`.
 
 ## Writing a rule

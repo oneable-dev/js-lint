@@ -1,4 +1,5 @@
 import type { OxlintConfig } from "oxlint";
+import { distImports } from "./restricted-imports.ts";
 
 export default {
   plugins: ["typescript", "unicorn", "oxc", "import"],
@@ -27,19 +28,7 @@ export default {
     "no-empty": "error",
     "no-useless-catch": "error",
     "preserve-caught-error": "error",
-    "no-restricted-imports": [
-      "error",
-      {
-        patterns: [
-          {
-            // Some packages document CSS imports from `dist/`, e.g. `@xyflow/react/dist/style.css`.
-            group: ["**/dist", "**/dist/**", "!**/dist/**/*.css"],
-            message:
-              "Import from the package's public entry point (`pkg` or a documented subpath like `pkg/feature`) instead of its `dist/` folder. Files under `dist/` are build output and can move in any release.",
-          },
-        ],
-      },
-    ],
+    "no-restricted-imports": ["error", { patterns: [distImports] }],
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
