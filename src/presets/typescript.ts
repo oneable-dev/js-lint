@@ -8,6 +8,32 @@ export default {
   },
   rules: {
     "typescript/no-explicit-any": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/consistent-type-assertions": [
+      "error",
+      { assertionStyle: "as", objectLiteralTypeAssertions: "never" },
+    ],
+    "typescript/no-unsafe-type-assertion": "error",
+    "typescript/consistent-type-definitions": ["error", "interface"],
+    "oneable/prefer-interface-extends": "error",
+    "oneable/no-declaration-merging": "error",
+    "typescript/no-restricted-types": [
+      "error",
+      {
+        types: {
+          object: {
+            message:
+              "Use a type that names the properties you need, or Record<string, unknown> if the keys are unknown.",
+          },
+        },
+      },
+    ],
     "typescript/ban-ts-comment": "error",
     "typescript/no-non-null-assertion": "error",
     "typescript/no-floating-promises": "error",

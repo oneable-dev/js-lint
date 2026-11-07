@@ -2,6 +2,7 @@ import type { OxlintConfig } from "oxlint";
 
 export default {
   plugins: ["typescript", "unicorn", "oxc", "import"],
+  jsPlugins: ["@oneable/js-lint"],
   options: {
     reportUnusedDisableDirectives: "error",
   },
@@ -9,6 +10,8 @@ export default {
     "no-use-before-define": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     "max-params": ["error", { max: 3, countThis: "never" }],
+    "oneable/prefer-switch": "error",
+    "no-else-return": "error",
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
