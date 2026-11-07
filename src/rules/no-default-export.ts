@@ -5,7 +5,7 @@
  * Why: Default exports let each importer pick a different name, which makes code harder to
  *   search and rename. Agents often invent a new name on every import.
  * Source: none (example rule used to set up the project)
- * Scope: all files, except src/index.ts (oxlint requires the plugin entry to default-export)
+ * Scope: not enabled in preset.json (frameworks like Expo Router require default exports)
  * Not covered: `export { foo as default }`.
  *
  * @example Bad

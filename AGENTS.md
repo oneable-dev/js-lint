@@ -4,7 +4,8 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 
 ## Commands
 
-- `pnpm lint` — run oxlint (this repo is linted with its own plugin)
+- `pnpm build` — compile `src` to `dist` (Node cannot strip types inside `node_modules`, so consumers load `dist`)
+- `pnpm lint` — build, then run oxlint on this repo with `preset.json`
 - `pnpm test` — run rule tests (vitest + `RuleTester`)
 - `pnpm typecheck` — type check
 
@@ -13,7 +14,13 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 - `src/index.ts` — plugin entry; register every rule here
 - `src/rules/<rule-name>.ts` — one rule per file
 - `src/rules/<rule-name>.test.ts` — `RuleTester` tests for that rule
-- `.oxlintrc.json` — enables rules; use `overrides` to scope a rule to certain files
+- `preset.json` — the shared config consumers extend: chosen built-in rules + this plugin's rules. Use `overrides` to scope a rule to certain files
+- `.oxlintrc.json` — this repo's own root config; extends `preset.json`
+
+## Limits
+
+- Custom JS rules cannot use type information. Type-aware checks are only possible with oxlint's built-in rules (via `oxlint-tsgolint`).
+- `options` (`typeAware`, `reportUnusedDisableDirectives`) work from `preset.json` through `extends` (verified with oxlint 1.92.0), even though the schema says "root configuration only". They do not work in nested configs inside subdirectories.
 
 ## Writing a rule
 

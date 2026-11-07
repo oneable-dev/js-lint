@@ -3,15 +3,31 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "files": [
+    "dist",
+    "preset.json"
+  ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./preset.json": "./preset.json"
+  },
   "scripts": {
-    "lint": "oxlint",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "pnpm build && oxlint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@oxlint/plugins": "1.92.0"
+  },
+  "peerDependencies": {
+    "oxlint": "^1.92.0",
+    "oxlint-tsgolint": "^7.0.2006"
+  },
   "devDependencies": {
-    "@oxlint/plugins": "1.92.0",
     "@types/node": "^26.6.6",
     "oxlint": "1.92.0",
+    "oxlint-tsgolint": "^7.0.2006",
     "typescript": "^7.0.2",
     "vitest": "5.1.0"
   }

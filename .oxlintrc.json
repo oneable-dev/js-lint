@@ -1,17 +1,4 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "jsPlugins": ["./src/index.ts"],
-  "rules": {
-    "ts-lint/no-default-export": "error"
-  },
-  "overrides": [
-    {
-      "files": ["src/index.ts"],
-      "rules": { "ts-lint/no-default-export": "off" }
-    },
-    {
-      "files": ["**/*.{test,spec}.{ts,tsx}"],
-      "rules": { "ts-lint/no-focused-tests": "error" }
-    }
-  ]
+  "extends": ["./preset.json"]
 }
