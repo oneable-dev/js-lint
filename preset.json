@@ -20,7 +20,9 @@
     "react/exhaustive-deps": "error",
     "react/jsx-key": "error",
     "react/no-array-index-key": "error",
-    "ts-lint/no-raw-text": "error"
+    "ts-lint/no-raw-text": "error",
+
+    "no-use-before-define": "error"
   },
   "overrides": [
     {
