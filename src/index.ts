@@ -3,6 +3,7 @@ import { destructureProps } from "./rules/destructure-props.ts";
 import { maxParams } from "./rules/max-params.ts";
 import { noDeclarationMerging } from "./rules/no-declaration-merging.ts";
 import { noRawText } from "./rules/no-raw-text.ts";
+import { preferFunctionalUpdate } from "./rules/prefer-functional-update.ts";
 import { preferInterfaceExtends } from "./rules/prefer-interface-extends.ts";
 import { preferSwitch } from "./rules/prefer-switch.ts";
 
@@ -13,6 +14,7 @@ export default definePlugin({
     "max-params": maxParams,
     "no-declaration-merging": noDeclarationMerging,
     "no-raw-text": noRawText,
+    "prefer-functional-update": preferFunctionalUpdate,
     "prefer-interface-extends": preferInterfaceExtends,
     "prefer-switch": preferSwitch,
   },

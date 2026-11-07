@@ -27,6 +27,10 @@
       "types": "./dist/presets/react-native.d.ts",
       "default": "./dist/presets/react-native.js"
     },
+    "./nextjs": {
+      "types": "./dist/presets/nextjs.d.ts",
+      "default": "./dist/presets/nextjs.js"
+    },
     "./vitest": {
       "types": "./dist/presets/vitest.d.ts",
       "default": "./dist/presets/vitest.js"

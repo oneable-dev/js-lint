@@ -15,7 +15,7 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 - `src/rules/<rule-name>.ts` — one rule per file
 - `src/rules/<rule-name>.test.ts` — `RuleTester` tests for that rule
 - `src/utils/` — AST helpers shared by rules. Do not depend on packages that need `eslint`; pnpm installs their `eslint` peer dependency into every consumer
-- `src/presets/*.ts` — shared configs consumers import as `@oneable/js-lint/<preset>`. Layered: `base` ← `typescript` ← `react` ← `react-native`; `vitest` is separate and combined with any of them. Put each rule in the lowest layer it applies to. Use `overrides` to scope a rule to certain files
+- `src/presets/*.ts` — shared configs consumers import as `@oneable/js-lint/<preset>`. Layered: `base` ← `typescript` ← `react` ← `react-native` / `nextjs`; `vitest` is separate and combined with any of them. Put each rule in the lowest layer it applies to. Use `overrides` to scope a rule to certain files
 - `oxlint.config.ts` — this repo's own config (`typescript` + `vitest`)
 
 ## Limits

@@ -24,6 +24,7 @@ export default defineConfig({ extends: [reactNative, vitest] });
 | `@oneable/js-lint/typescript` | `base` + TypeScript and type-aware rules |
 | `@oneable/js-lint/react` | `typescript` + React rules |
 | `@oneable/js-lint/react-native` | `react` + React Native rules |
+| `@oneable/js-lint/nextjs` | `react` + Next.js rules |
 | `@oneable/js-lint/vitest` | Test-file rules; combine with any preset above |
 
 - Use `oxlint.config.ts`. `.oxlintrc.json` cannot import presets by package name.

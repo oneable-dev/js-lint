@@ -10,5 +10,6 @@ export default {
     "react/jsx-key": "error",
     "react/no-array-index-key": "error",
     "oneable/destructure-props": "error",
+    "oneable/prefer-functional-update": "error",
   },
 } satisfies OxlintConfig;
