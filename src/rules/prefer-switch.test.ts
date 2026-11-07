@@ -11,6 +11,9 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("prefer-switch", preferSwitch, {
   valid: [
+    // One `if` with several values is a single condition
+    "if (x === 'a' || x === 'b' || x === 'c') f();",
+    "if (x === 'a' || x === 'b' || x === 'c') f(); else g();",
     // Only 2 comparisons
     "if (x === 'a') f(); else if (x === 'b') g();",
     // Different values

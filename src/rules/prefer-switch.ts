@@ -7,7 +7,8 @@
  *   appending `else if` branches instead.
  * Source: write-good-typescript (conditional branches)
  * Scope: base preset, all files
- * Not covered: separate guard clauses (`if (x === "a") return; if (x === "b") return;`), which
+ * Not covered: a single `if` whose condition lists values with `||`, which is one condition;
+ *   separate guard clauses (`if (x === "a") return; if (x === "b") return;`), which
  *   are often unrelated checks; comparisons with non-constant values (`x === other`), because
  *   they cannot become `case` labels safely; chains with fewer than 3 comparisons.
  *
@@ -26,6 +27,8 @@
 import { defineRule, type ESTree } from "@oxlint/plugins";
 
 const MINIMUM_COMPARISONS = 3;
+// A single `if (x === "a" || x === "b" || x === "c")` is one condition, not a set of cases.
+const MINIMUM_BRANCHES = 2;
 
 interface Comparison {
   discriminant: string;
@@ -91,6 +94,7 @@ export const preferSwitch = defineRule({
 
         let discriminant: string | undefined;
         let count = 0;
+        let branches = 0;
         let current: ESTree.Node | null = node;
 
         while (current?.type === "IfStatement") {
@@ -104,10 +108,11 @@ export const preferSwitch = defineRule({
 
           discriminant = result.discriminant;
           count += result.count;
+          branches += 1;
           current = current.alternate;
         }
 
-        if (discriminant !== undefined && count >= MINIMUM_COMPARISONS) {
+        if (discriminant !== undefined && branches >= MINIMUM_BRANCHES && count >= MINIMUM_COMPARISONS) {
           context.report({ node, messageId: "preferSwitch", data: { discriminant, count: String(count) } });
         }
       },

@@ -13,7 +13,7 @@ export default {
   rules: {
     "no-use-before-define": "error",
     "unicorn/no-abusive-eslint-disable": "error",
-    "max-params": ["error", { max: 3, countThis: "never" }],
+    "oneable/max-params": "error",
     "oneable/prefer-switch": "error",
     "no-else-return": "error",
     "one-var": ["error", "never"],
@@ -39,7 +39,7 @@ export default {
       // Declaration files describe external APIs, so their parameter counts are not ours to choose.
       // Tests are excluded by choice.
       files: ["**/*.d.ts", "**/*.{test,spec}.{js,jsx,ts,tsx}"],
-      rules: { "max-params": "off" },
+      rules: { "oneable/max-params": "off" },
     },
   ],
 } satisfies OxlintConfig;
