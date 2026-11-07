@@ -9,5 +9,6 @@ export default {
     "react/exhaustive-deps": "error",
     "react/jsx-key": "error",
     "react/no-array-index-key": "error",
+    "oneable/destructure-props": "error",
   },
 } satisfies OxlintConfig;

@@ -12,6 +12,9 @@ export default {
     "max-params": ["error", { max: 3, countThis: "never" }],
     "oneable/prefer-switch": "error",
     "no-else-return": "error",
+    "one-var": ["error", "never"],
+    "no-multi-assign": "error",
+    "no-sequences": "error",
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",
