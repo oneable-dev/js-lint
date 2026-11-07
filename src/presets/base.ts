@@ -23,6 +23,9 @@ export default {
     "max-depth": ["error", 3],
     curly: ["error", "all"],
     "no-console": ["error", { allow: ["warn", "error"] }],
+    "no-empty": "error",
+    "no-useless-catch": "error",
+    "preserve-caught-error": "error",
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",

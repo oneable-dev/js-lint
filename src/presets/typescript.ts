@@ -13,6 +13,8 @@ export default {
     "typescript/no-unsafe-call": "error",
     "typescript/no-unsafe-return": "error",
     "typescript/no-unsafe-argument": "error",
+    "typescript/only-throw-error": "error",
+    "typescript/prefer-promise-reject-errors": ["error", { allowThrowingUnknown: true }],
     "typescript/no-wrapper-object-types": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/consistent-type-assertions": [
