@@ -14,6 +14,7 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 - `src/index.ts` — plugin entry (plugin name `oneable`, so rules are `oneable/<rule-name>`); register every rule here
 - `src/rules/<rule-name>.ts` — one rule per file
 - `src/rules/<rule-name>.test.ts` — `RuleTester` tests for that rule
+- `src/utils/` — AST helpers shared by rules. Do not depend on packages that need `eslint`; pnpm installs their `eslint` peer dependency into every consumer
 - `src/presets/*.ts` — shared configs consumers import as `@oneable/js-lint/<preset>`. Layered: `base` ← `typescript` ← `react` ← `react-native`; `vitest` is separate and combined with any of them. Put each rule in the lowest layer it applies to. Use `overrides` to scope a rule to certain files
 - `oxlint.config.ts` — this repo's own config (`typescript` + `vitest`)
 
@@ -50,5 +51,7 @@ Other rules:
 - Error messages must say what is wrong and how to fix it. Agents read the message as their only feedback.
 - Prefer missing a case over reporting valid code. False positives teach agents to add `// oxlint-disable`.
 - Use `"error"` or `"off"`, never `"warn"`. Warnings do not fail lint, and agents move past them.
+- Add a `fix` only when the fixed code is guaranteed to behave the same. Use `suggest` when it usually does but cannot be proven (e.g. a getter may be read a different number of times). Otherwise report without a fix, and make the message say how to fix it.
+- Code ported from another project keeps a comment naming the project, version, and license.
 - Every rule needs a test file with both `valid` and `invalid` cases.
 - Scope rules with `overrides` in the preset instead of checking the filename inside the rule.
