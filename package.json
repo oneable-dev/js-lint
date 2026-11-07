@@ -1,15 +1,36 @@
 {
-  "name": "ts-lint",
+  "name": "@oneable/js-lint",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "files": [
-    "dist",
-    "preset.json"
+    "dist"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./preset.json": "./preset.json"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./base": {
+      "types": "./dist/presets/base.d.ts",
+      "default": "./dist/presets/base.js"
+    },
+    "./typescript": {
+      "types": "./dist/presets/typescript.d.ts",
+      "default": "./dist/presets/typescript.js"
+    },
+    "./react": {
+      "types": "./dist/presets/react.d.ts",
+      "default": "./dist/presets/react.js"
+    },
+    "./react-native": {
+      "types": "./dist/presets/react-native.d.ts",
+      "default": "./dist/presets/react-native.js"
+    },
+    "./vitest": {
+      "types": "./dist/presets/vitest.d.ts",
+      "default": "./dist/presets/vitest.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

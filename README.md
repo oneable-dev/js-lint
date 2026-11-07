@@ -1,21 +1,31 @@
-# ts-lint
+# @oneable/js-lint
 
 oxlint rules that enforce what agent skills used to ask for.
 
 ## Usage
 
 ```sh
-pnpm add -D <ts-lint> oxlint oxlint-tsgolint
+pnpm add -D @oneable/js-lint oxlint oxlint-tsgolint
 ```
 
-`.oxlintrc.json` in your project root:
+`oxlint.config.ts` in your project root. Pick the one preset that matches your project, and add `vitest` if you use it:
 
-```json
-{
-  "extends": ["./node_modules/ts-lint/preset.json"]
-}
+```ts
+import { defineConfig } from "oxlint";
+import reactNative from "@oneable/js-lint/react-native";
+import vitest from "@oneable/js-lint/vitest";
+
+export default defineConfig({ extends: [reactNative, vitest] });
 ```
 
-- `extends` must be a file path; a package name (`ts-lint/preset.json`) does not work.
-- Type-aware rules need a `tsconfig.json`.
+| Preset | Includes |
+|---|---|
+| `@oneable/js-lint/base` | JS rules |
+| `@oneable/js-lint/typescript` | `base` + TypeScript and type-aware rules |
+| `@oneable/js-lint/react` | `typescript` + React rules |
+| `@oneable/js-lint/react-native` | `react` + React Native rules |
+| `@oneable/js-lint/vitest` | Test-file rules; combine with any preset above |
+
+- Use `oxlint.config.ts`. `.oxlintrc.json` cannot import presets by package name.
+- `oxlint-tsgolint` and a `tsconfig.json` are needed for `typescript` and above.
 - Add `node_modules/` to `.gitignore`; oxlint uses it to skip files.

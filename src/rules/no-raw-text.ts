@@ -5,7 +5,7 @@
  * Why: React Native crashes at runtime with "Text strings must be rendered within a <Text>
  *   component". Agents coming from web React often write `<View>Hello</View>`.
  * Source: none
- * Scope: all files
+ * Scope: react-native preset, all files
  * Not covered: text inside custom components (`<Button>Save</Button>`), because they may wrap
  *   children in <Text> themselves; variables (`<View>{name}</View>`), because checking for a
  *   string needs type information; host components that are re-exported under another name.
