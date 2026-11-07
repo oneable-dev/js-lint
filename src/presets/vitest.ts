@@ -9,6 +9,8 @@ export default {
         "vitest/no-focused-tests": "error",
         "vitest/no-disabled-tests": "error",
         "vitest/expect-expect": "error",
+        // Partial mocks need `{ ... } as unknown as Service`.
+        "typescript/no-unsafe-type-assertion": "off",
       },
     },
   ],
