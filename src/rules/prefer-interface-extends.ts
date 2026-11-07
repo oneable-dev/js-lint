@@ -41,7 +41,9 @@ export const preferInterfaceExtends = defineRule({
       Program(program) {
         for (const statement of program.body) {
           const declaration = statement.type === "ExportNamedDeclaration" ? statement.declaration : statement;
-          if (declaration?.type !== "TSTypeAliasDeclaration") continue;
+          if (declaration?.type !== "TSTypeAliasDeclaration") {
+            continue;
+          }
 
           const kind = declaration.typeAnnotation.type;
           if (kind !== "TSTypeLiteral" && kind !== "TSIntersectionType") {
@@ -50,15 +52,23 @@ export const preferInterfaceExtends = defineRule({
         }
       },
       TSTypeAliasDeclaration(node) {
-        if (node.typeAnnotation.type !== "TSIntersectionType") return;
+        if (node.typeAnnotation.type !== "TSIntersectionType") {
+          return;
+        }
 
         const typeParameters = new Set(node.typeParameters?.params.map((param) => param.name.name));
         const extendable = node.typeAnnotation.types.every((member) => {
-          if (member.type === "TSTypeLiteral") return true;
-          if (member.type !== "TSTypeReference") return false;
+          if (member.type === "TSTypeLiteral") {
+            return true;
+          }
+          if (member.type !== "TSTypeReference") {
+            return false;
+          }
 
           const name = referenceName(member.typeName);
-          if (name && (typeParameters.has(name) || nonObjectAliases.has(name))) return false;
+          if (name && (typeParameters.has(name) || nonObjectAliases.has(name))) {
+            return false;
+          }
           return true;
         });
 

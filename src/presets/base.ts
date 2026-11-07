@@ -15,6 +15,9 @@ export default {
     "one-var": ["error", "never"],
     "no-multi-assign": "error",
     "no-sequences": "error",
+    "no-nested-ternary": "error",
+    "max-depth": ["error", 3],
+    curly: ["error", "all"],
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",

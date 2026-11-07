@@ -33,8 +33,12 @@ const HOST_COMPONENTS = new Set([
 
 // `View` -> "View", `Animated.View` -> "View"
 function lastName(name: ESTree.JSXElementName): string | undefined {
-  if (name.type === "JSXIdentifier") return name.name;
-  if (name.type === "JSXMemberExpression") return name.property.name;
+  if (name.type === "JSXIdentifier") {
+    return name.name;
+  }
+  if (name.type === "JSXMemberExpression") {
+    return name.property.name;
+  }
   return undefined;
 }
 
@@ -57,7 +61,9 @@ export const noRawText = defineRule({
   },
   create(context) {
     function check(node: ESTree.Node, parent: ESTree.Node | null) {
-      if (parent?.type !== "JSXElement") return;
+      if (parent?.type !== "JSXElement") {
+        return;
+      }
       const name = lastName(parent.openingElement.name);
       if (name && HOST_COMPONENTS.has(name)) {
         context.report({ node, messageId: "noRawText", data: { name } });
@@ -66,7 +72,9 @@ export const noRawText = defineRule({
 
     return {
       JSXText(node) {
-        if (node.value.trim() !== "") check(node, node.parent);
+        if (node.value.trim() !== "") {
+          check(node, node.parent);
+        }
       },
       JSXExpressionContainer(node) {
         if (isStringLiteral(node.expression)) {

@@ -52,8 +52,12 @@ function isDeclaration(node: ESTree.Node): node is ESTree.Declaration {
 }
 
 function unwrapExport(statement: ESTree.Node): ESTree.Node | null {
-  if (statement.type === "ExportNamedDeclaration") return statement.declaration;
-  if (statement.type === "ExportDefaultDeclaration") return statement.declaration;
+  if (statement.type === "ExportNamedDeclaration") {
+    return statement.declaration;
+  }
+  if (statement.type === "ExportDefaultDeclaration") {
+    return statement.declaration;
+  }
   return statement;
 }
 
@@ -69,11 +73,15 @@ function collect(declaration: ESTree.Declaration, add: (name: string, entry: Ent
       add(declaration.id.name, { kind: "enum", node: declaration.id });
       return;
     case "ClassDeclaration":
-      if (declaration.id) add(declaration.id.name, { kind: "class", node: declaration.id });
+      if (declaration.id) {
+        add(declaration.id.name, { kind: "class", node: declaration.id });
+      }
       return;
     case "FunctionDeclaration":
     case "TSDeclareFunction":
-      if (declaration.id) add(declaration.id.name, { kind: "function", node: declaration.id });
+      if (declaration.id) {
+        add(declaration.id.name, { kind: "function", node: declaration.id });
+      }
       return;
     case "VariableDeclaration":
       for (const declarator of declaration.declarations) {
@@ -111,7 +119,9 @@ export const noDeclarationMerging = defineRule({
 
       for (const statement of body) {
         const declaration = unwrapExport(statement);
-        if (!declaration || !isDeclaration(declaration)) continue;
+        if (!declaration || !isDeclaration(declaration)) {
+          continue;
+        }
 
         collect(declaration, (name, entry) => {
           const first = seen.get(name);
@@ -121,7 +131,9 @@ export const noDeclarationMerging = defineRule({
           }
 
           // Function overloads are separate declarations of one function.
-          if (first.kind === "function" && entry.kind === "function") return;
+          if (first.kind === "function" && entry.kind === "function") {
+            return;
+          }
 
           if (first.kind === "interface" && entry.kind === "interface") {
             context.report({ node: entry.node, messageId: "duplicateInterface", data: { name } });

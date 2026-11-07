@@ -37,33 +37,49 @@ function isPascalCase(name: string): boolean {
 
 // `function Card() {}`, `const Card = () => {}`, `const Card = memo(forwardRef(() => {}))`
 function componentName(node: FunctionNode): string | undefined {
-  if (node.id) return node.id.name;
+  if (node.id) {
+    return node.id.name;
+  }
 
   let current: ESTree.Node = node.parent;
-  while (current.type === "CallExpression") current = current.parent;
+  while (current.type === "CallExpression") {
+    current = current.parent;
+  }
 
-  if (current.type === "VariableDeclarator" && current.id.type === "Identifier") return current.id.name;
+  if (current.type === "VariableDeclarator" && current.id.type === "Identifier") {
+    return current.id.name;
+  }
   return undefined;
 }
 
 // `props` in `(props)`, `(props: Props)`, or `(props = {})`
 function propsIdentifier(node: FunctionNode): ESTree.BindingIdentifier | undefined {
   const [first] = node.params;
-  if (!first) return undefined;
-  if (first.type === "Identifier") return first;
-  if (first.type === "AssignmentPattern" && first.left.type === "Identifier") return first.left;
+  if (!first) {
+    return undefined;
+  }
+  if (first.type === "Identifier") {
+    return first;
+  }
+  if (first.type === "AssignmentPattern" && first.left.type === "Identifier") {
+    return first.left;
+  }
   return undefined;
 }
 
 function isBodyDestructuring(identifier: ESTree.Node): boolean {
   const { parent } = identifier;
-  if (parent?.type !== "VariableDeclarator") return false;
+  if (parent?.type !== "VariableDeclarator") {
+    return false;
+  }
   return parent.init === identifier && parent.id.type === "ObjectPattern";
 }
 
 function isMemberAccess(identifier: ESTree.Node): boolean {
   const { parent } = identifier;
-  if (parent?.type !== "MemberExpression") return false;
+  if (parent?.type !== "MemberExpression") {
+    return false;
+  }
   return parent.object === identifier;
 }
 
@@ -87,23 +103,33 @@ export const destructureProps = defineRule({
     }
 
     function markJSX() {
-      for (const frame of stack) frame.hasJSX = true;
+      for (const frame of stack) {
+        frame.hasJSX = true;
+      }
     }
 
     function exit() {
       const frame = stack.pop();
-      if (!frame?.hasJSX) return;
+      if (!frame?.hasJSX) {
+        return;
+      }
 
       const component = componentName(frame.node);
-      if (!component || !isPascalCase(component)) return;
+      if (!component || !isPascalCase(component)) {
+        return;
+      }
 
       const param = propsIdentifier(frame.node);
-      if (!param) return;
+      if (!param) {
+        return;
+      }
 
       const variable = context.sourceCode
         .getDeclaredVariables(frame.node)
         .find((candidate) => candidate.name === param.name);
-      if (!variable) return;
+      if (!variable) {
+        return;
+      }
 
       const identifiers = variable.references.map((reference) => reference.identifier);
       const usedAsWhole = identifiers.some((id) => !isMemberAccess(id) && !isBodyDestructuring(id));

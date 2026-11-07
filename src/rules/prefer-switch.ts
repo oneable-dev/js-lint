@@ -33,7 +33,9 @@ interface Comparison {
 }
 
 function isConstant(node: ESTree.Node): boolean {
-  if (node.type === "Literal") return true;
+  if (node.type === "Literal") {
+    return true;
+  }
   return node.type === "TemplateLiteral" && node.expressions.length === 0;
 }
 
@@ -51,20 +53,30 @@ export const preferSwitch = defineRule({
     // `x === "a"` or `"a" === x` -> { "x", 1 }; `x === "a" || x === "b"` -> { "x", 2 }
     function comparison(test: ESTree.Node): Comparison | undefined {
       if (test.type === "LogicalExpression") {
-        if (test.operator !== "||") return undefined;
+        if (test.operator !== "||") {
+          return undefined;
+        }
 
         const left = comparison(test.left);
         const right = comparison(test.right);
-        if (!left || !right || left.discriminant !== right.discriminant) return undefined;
+        if (!left || !right || left.discriminant !== right.discriminant) {
+          return undefined;
+        }
         return { discriminant: left.discriminant, count: left.count + right.count };
       }
 
-      if (test.type !== "BinaryExpression") return undefined;
-      if (test.operator !== "===" && test.operator !== "==") return undefined;
+      if (test.type !== "BinaryExpression") {
+        return undefined;
+      }
+      if (test.operator !== "===" && test.operator !== "==") {
+        return undefined;
+      }
 
       const leftConstant = isConstant(test.left);
       const rightConstant = isConstant(test.right);
-      if (leftConstant === rightConstant) return undefined;
+      if (leftConstant === rightConstant) {
+        return undefined;
+      }
 
       const subject = leftConstant ? test.right : test.left;
       return { discriminant: context.sourceCode.getText(subject), count: 1 };
@@ -73,7 +85,9 @@ export const preferSwitch = defineRule({
     return {
       IfStatement(node) {
         // Only start from the head of a chain, not from each `else if`.
-        if (node.parent.type === "IfStatement" && node.parent.alternate === node) return;
+        if (node.parent.type === "IfStatement" && node.parent.alternate === node) {
+          return;
+        }
 
         let discriminant: string | undefined;
         let count = 0;
@@ -81,8 +95,12 @@ export const preferSwitch = defineRule({
 
         while (current?.type === "IfStatement") {
           const result = comparison(current.test);
-          if (!result) return;
-          if (discriminant !== undefined && result.discriminant !== discriminant) return;
+          if (!result) {
+            return;
+          }
+          if (discriminant !== undefined && result.discriminant !== discriminant) {
+            return;
+          }
 
           discriminant = result.discriminant;
           count += result.count;
