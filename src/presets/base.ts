@@ -3,6 +3,10 @@ import type { OxlintConfig } from "oxlint";
 export default {
   plugins: ["typescript", "unicorn", "oxc", "import"],
   jsPlugins: ["@oneable/js-lint"],
+  // oxlint enables the correctness category by default, but only as warnings, which do not fail lint.
+  categories: {
+    correctness: "error",
+  },
   options: {
     reportUnusedDisableDirectives: "error",
   },
@@ -18,6 +22,7 @@ export default {
     "no-nested-ternary": "error",
     "max-depth": ["error", 3],
     curly: ["error", "all"],
+    "no-console": ["error", { allow: ["warn", "error"] }],
 
     "import/no-duplicates": "error",
     "import/no-cycle": "error",

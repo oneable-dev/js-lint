@@ -49,5 +49,6 @@ Other rules:
 
 - Error messages must say what is wrong and how to fix it. Agents read the message as their only feedback.
 - Prefer missing a case over reporting valid code. False positives teach agents to add `// oxlint-disable`.
+- Use `"error"` or `"off"`, never `"warn"`. Warnings do not fail lint, and agents move past them.
 - Every rule needs a test file with both `valid` and `invalid` cases.
 - Scope rules with `overrides` in the preset instead of checking the filename inside the rule.
