@@ -154,7 +154,7 @@ function collectChain(head: ESTree.IfStatement): Chain {
   for (let statement: ESTree.Node | null = head; statement?.type === "IfStatement"; statement = statement.alternate) {
     const comparisons = equalityComparisons(statement.test);
     const [first] = comparisons;
-    if (!first) {
+    if (first === undefined) {
       break;
     }
 
@@ -272,7 +272,7 @@ function hasDuplicateCase(chain: Chain, sourceCode: SourceCode): boolean {
 
 // Same as ESLint's merge of a fix array: sort by range, keep the given order at equal positions.
 function applyEdits(edits: Edit[], range: Range, sourceCode: SourceCode): string {
-  const sorted = edits.toSorted((a, b) => a.range[0] - b.range[0] || a.range[1] - b.range[1]);
+  const sorted = edits.toSorted((a, b) => a.range[0] === b.range[0] ? a.range[1] - b.range[1] : a.range[0] - b.range[0]);
   let text = "";
   let position = range[0];
 
@@ -328,7 +328,7 @@ function switchText(chain: Chain, options: Options, sourceCode: SourceCode): { r
   const { branches, discriminant } = chain;
   const first = branches[0]?.statement;
   const last = branches.at(-1)?.statement;
-  if (!first || !last || !discriminant) {
+  if (first === undefined || !last || !discriminant) {
     return null;
   }
 
@@ -344,7 +344,7 @@ function switchText(chain: Chain, options: Options, sourceCode: SourceCode): { r
   edits.push(...branches.flatMap((branch) => branchEdits(branch, layout)));
 
   const emptyDefault = last.alternate ? undefined : emptyDefaultText(options, indent, linebreak);
-  if (emptyDefault) {
+  if (emptyDefault !== undefined) {
     edits.push({ range: [end, end], text: emptyDefault });
   }
   edits.push({ range: [end, end], text: `${linebreak}${indent}}` });

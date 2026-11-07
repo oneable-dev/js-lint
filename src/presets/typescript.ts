@@ -41,6 +41,23 @@ export default {
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": "error",
     "typescript/switch-exhaustiveness-check": "error",
+    // Conditions must be booleans: write `count > 0` and `name !== ""`. Objects that may be null or
+    // undefined are allowed (`if (user)`), since an object is never falsy.
+    "typescript/strict-boolean-expressions": [
+      "error",
+      {
+        allowString: false,
+        allowNumber: false,
+        allowNullableObject: true,
+        allowNullableBoolean: false,
+        allowNullableString: false,
+        allowNullableNumber: false,
+        allowNullableEnum: false,
+        allowAny: false,
+      },
+    ],
+    // strict-boolean-expressions requires `Boolean(value)` for `unknown` values, which this rule reports.
+    "no-extra-boolean-cast": "off",
     "typescript/consistent-type-imports": "error",
     "typescript/no-require-imports": "error",
   },

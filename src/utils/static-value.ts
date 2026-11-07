@@ -35,7 +35,7 @@ function findVariable(scope: Scope | null, name: string): Variable | undefined {
 // `const NAME = <init>` with a single definition.
 function constInitializer(variable: Variable): ESTree.Expression | null {
   const [definition] = variable.defs;
-  if (variable.defs.length !== 1 || !definition || definition.type !== "Variable") {
+  if (variable.defs.length !== 1 || definition === undefined || definition.type !== "Variable") {
     return null;
   }
   if (definition.parent?.type !== "VariableDeclaration" || definition.parent.kind !== "const") {
@@ -63,7 +63,7 @@ function identifierValue(name: string, scope: Scope | null, evaluate: Evaluate):
 
 function unaryValue(operator: string, value: unknown): StaticValue | null {
   if (operator === "!") {
-    return { value: !value };
+    return { value: !Boolean(value) };
   }
   if (operator === "typeof") {
     return { value: typeof value };
@@ -128,7 +128,7 @@ function logicalValue(node: ESTree.LogicalExpression, scope: Scope | null, evalu
   }
 
   const shortCircuits =
-    (node.operator === "&&" && !left.value) ||
+    (node.operator === "&&" && !Boolean(left.value)) ||
     (node.operator === "||" && Boolean(left.value)) ||
     (node.operator === "??" && left.value !== null && left.value !== undefined);
   return shortCircuits ? left : evaluate(node.right, scope);
@@ -143,7 +143,7 @@ function templateValue(node: ESTree.TemplateLiteral, scope: Scope | null, evalua
     text += quasi.value.cooked;
 
     const expression = node.expressions[index];
-    const value = expression ? evaluate(expression, scope) : { value: "" };
+    const value = expression !== undefined ? evaluate(expression, scope) : { value: "" };
     if (!value) {
       return null;
     }

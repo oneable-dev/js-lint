@@ -85,7 +85,7 @@ export const preferFunctionalUpdate = defineRule({
             continue;
           }
           const [argument] = call.arguments;
-          if (!argument || argument.type === "SpreadElement" || isFunction(argument)) {
+          if (argument === undefined || argument.type === "SpreadElement" || isFunction(argument)) {
             continue;
           }
           // `setCount(count)` sets the state to itself; it does not compute anything from it.

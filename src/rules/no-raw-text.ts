@@ -65,7 +65,7 @@ export const noRawText = defineRule({
         return;
       }
       const name = lastName(parent.openingElement.name);
-      if (name && HOST_COMPONENTS.has(name)) {
+      if (name !== undefined && HOST_COMPONENTS.has(name)) {
         context.report({ node, messageId: "noRawText", data: { name } });
       }
     }

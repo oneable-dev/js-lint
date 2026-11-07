@@ -15,6 +15,7 @@ export default {
     "unicorn/no-abusive-eslint-disable": "error",
     "oneable/max-params": "error",
     "oneable/prefer-switch": "error",
+    "oneable/prefer-static-env": "error",
     "no-else-return": "error",
     "one-var": ["error", "never"],
     "no-multi-assign": "error",

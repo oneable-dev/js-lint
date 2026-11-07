@@ -55,7 +55,7 @@ function componentName(node: FunctionNode): string | undefined {
 // `props` in `(props)`, `(props: Props)`, or `(props = {})`
 function propsIdentifier(node: FunctionNode): ESTree.BindingIdentifier | undefined {
   const [first] = node.params;
-  if (!first) {
+  if (first === undefined) {
     return undefined;
   }
   if (first.type === "Identifier") {
@@ -110,12 +110,12 @@ export const destructureProps = defineRule({
 
     function exit() {
       const frame = stack.pop();
-      if (!frame?.hasJSX) {
+      if (frame?.hasJSX !== true) {
         return;
       }
 
       const component = componentName(frame.node);
-      if (!component || !isPascalCase(component)) {
+      if (component === undefined || !isPascalCase(component)) {
         return;
       }
 
