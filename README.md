@@ -29,3 +29,17 @@ export default defineConfig({ extends: [reactNative, vitest] });
 - Use `oxlint.config.ts`. `.oxlintrc.json` cannot import presets by package name.
 - `oxlint-tsgolint` and a `tsconfig.json` are needed for `typescript` and above.
 - Add `node_modules/` to `.gitignore`; oxlint uses it to skip files.
+
+## Optional rules
+
+`import/no-default-export` is not in any preset, because which files need a default export depends on the framework (Expo Router and Next.js routes, `*.config.ts`, Storybook). Enable it with your own exceptions:
+
+```ts
+export default defineConfig({
+  extends: [reactNative],
+  rules: { "import/no-default-export": "error" },
+  overrides: [
+    { files: ["app/**", "*.config.ts"], rules: { "import/no-default-export": "off" } },
+  ],
+});
+```

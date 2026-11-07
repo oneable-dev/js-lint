@@ -13,5 +13,7 @@ export default {
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": "error",
     "typescript/switch-exhaustiveness-check": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-require-imports": "error",
   },
 } satisfies OxlintConfig;
