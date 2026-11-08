@@ -100,7 +100,7 @@ function readOptions(options: readonly unknown[]): Options {
     return { max: DEFAULT_MAX, ignoreRest: false };
   }
   const max = "max" in first && typeof first.max === "number" ? first.max : DEFAULT_MAX;
-  const ignoreRest: boolean = "ignoreRest" in first && first.ignoreRest;
+  const ignoreRest = "ignoreRest" in first && first.ignoreRest === true;
   return { max, ignoreRest };
 }
 
