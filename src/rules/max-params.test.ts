@@ -73,5 +73,19 @@ ruleTester.run("max-params", maxParams, {
       options: [{ ignoreRest: true }],
       errors: [{ messageId: "tooMany", data: { name: "f", count: "5", max: "3", params: "a, b, c, d, ...rest" } }],
     },
+    {
+      code: "function f(a: number, b: number, c: number, d: number) {}",
+      options: [{ ignoreRest: true }],
+      errors: [{ messageId: "tooMany", data: { name: "f", count: "4", max: "3", params: "a, b, c, d" } }],
+    },
+    {
+      code: "function f(a: number, b: number, c: number, ...rest: number[]) {}",
+      options: [{ ignoreRest: false }],
+      errors: [{ messageId: "tooMany", data: { name: "f", count: "4", max: "3", params: "a, b, c, ...rest" } }],
+    },
+    {
+      code: "function f(a: number, b: number, c: number, ...rest: number[]) {}",
+      errors: [{ messageId: "tooMany", data: { name: "f", count: "4", max: "3", params: "a, b, c, ...rest" } }],
+    },
   ],
 });

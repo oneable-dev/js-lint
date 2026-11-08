@@ -129,7 +129,7 @@ export const maxParams = defineRule({
     function check(node: FunctionLike) {
       const params = node.params.filter((param) => !isThisParam(param));
       // With `ignoreRest`, the rest parameter does not count toward the limit.
-      const counted = ignoreRest ? params.length - 1 : params.length;
+      const counted = ignoreRest && params.at(-1)?.type === "RestElement" ? params.length - 1 : params.length;
       if (counted <= max) {return;}
 
       context.report({
