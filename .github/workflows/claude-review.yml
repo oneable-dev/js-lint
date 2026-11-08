@@ -1,13 +1,32 @@
 name: Claude Review
+
+# Trial wiring: the reusable workflow is pinned to the feat/claude-review-loop branch of
+# oneable-dev/.github. Switch to @main once that branch is merged.
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+
 jobs:
   review:
-    uses: oneable-dev/.github/.github/workflows/claude-review.yml@main
+    uses: oneable-dev/.github/.github/workflows/claude-review.yml@feat/claude-review-loop
+    # The reusable workflow pushes fix commits, so it needs contents: write.
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       issues: write
+    with:
+      # pnpm 11 matches the lockfile and the minimumReleaseAge settings in pnpm-workspace.yaml.
+      # It needs Node >= 22.13; the oxlint config is TypeScript and needs Node type stripping.
+      setup_command: |
+        node --version
+        npm install --global pnpm@11.5.0
+        pnpm install --frozen-lockfile
+      # `pnpm lint` builds first because the presets load this package from dist.
+      check_commands: |
+        pnpm lint
+        pnpm typecheck
+        pnpm test
+      # Build first so oxlint can load the plugin from dist, then apply the safe fixes.
+      fix_command: pnpm build && pnpm exec oxlint --fix
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
