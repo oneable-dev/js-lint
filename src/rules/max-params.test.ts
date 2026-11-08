@@ -18,6 +18,8 @@ ruleTester.run("max-params", maxParams, {
     "function f(this: Window, a: number, b: number, c: number) {}",
     "interface Api { get(a: number, b: number, c: number): void }",
     { code: "function f(a: number, b: number, c: number, d: number) {}", options: [{ max: 4 }] },
+    { code: "function f(a: number, b: number, c: number, ...rest: number[]) {}", options: [{ ignoreRest: true }] },
+    { code: "const f = (a: number, ...rest: number[]) => rest.length + a;", options: [{ max: 1, ignoreRest: true }] },
   ],
   invalid: [
     {
@@ -65,6 +67,11 @@ ruleTester.run("max-params", maxParams, {
     {
       code: "function f(this: Window, a: number, b: number, c: number, d: number) {}",
       errors: [{ messageId: "tooMany", data: { name: "f", count: "4", max: "3", params: "a, b, c, d" } }],
+    },
+    {
+      code: "function f(a: number, b: number, c: number, d: number, ...rest: number[]) {}",
+      options: [{ ignoreRest: true }],
+      errors: [{ messageId: "tooMany", data: { name: "f", count: "5", max: "3", params: "a, b, c, d, ...rest" } }],
     },
   ],
 });

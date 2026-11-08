@@ -9,6 +9,8 @@
  *   interface methods, call signatures, and constructor types.
  * Source: write-good-code (function responsibility and arguments)
  * Scope: base preset, all files except `*.d.ts` and test files
+ * Options: `{ max?: number, ignoreRest?: boolean }`. With `ignoreRest: true`, a rest parameter
+ *   (`...args`) is not counted, because it collects a variable number of values of one kind.
  * Not covered: TypeScript `this` parameters, which are not real arguments.
  *
  * @example Bad
@@ -87,12 +89,19 @@ function paramName(param: ESTree.Node): string {
   return "options";
 }
 
-function readMax(options: readonly unknown[]): number {
+interface Options {
+  max: number;
+  ignoreRest: boolean;
+}
+
+function readOptions(options: readonly unknown[]): Options {
   const [first] = options;
-  if (typeof first !== "object" || first === null || !("max" in first)) {
-    return DEFAULT_MAX;
+  if (typeof first !== "object" || first === null) {
+    return { max: DEFAULT_MAX, ignoreRest: false };
   }
-  return typeof first.max === "number" ? first.max : DEFAULT_MAX;
+  const max = "max" in first && typeof first.max === "number" ? first.max : DEFAULT_MAX;
+  const ignoreRest: boolean = "ignoreRest" in first && first.ignoreRest;
+  return { max, ignoreRest };
 }
 
 export const maxParams = defineRule({
@@ -106,19 +115,22 @@ export const maxParams = defineRule({
     schema: [
       {
         type: "object",
-        properties: { max: { type: "integer", minimum: 0 } },
+        properties: {
+          max: { type: "integer", minimum: 0 },
+          ignoreRest: { type: "boolean" },
+        },
         additionalProperties: false,
       },
     ],
   },
   create(context) {
-    const max = readMax(context.options);
+    const { max, ignoreRest } = readOptions(context.options);
 
     function check(node: FunctionLike) {
       const params = node.params.filter((param) => !isThisParam(param));
-      if (params.length <= max) {
-        return;
-      }
+      // With `ignoreRest`, the rest parameter does not count toward the limit.
+      const counted = ignoreRest ? params.length - 1 : params.length;
+      if (counted <= max) return;
 
       context.report({
         node,
