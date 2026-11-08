@@ -1,4 +1,5 @@
 name: Claude App Probe
+# probe B: workflow-validation change
 
 # Temporary caller workflow for a live probe of the official Claude GitHub App token and hooks.
 # Pinned to the test/claude-app-probe branch of oneable-dev/.github. Remove after the probe.
