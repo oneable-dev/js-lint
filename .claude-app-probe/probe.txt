@@ -1,1 +1,2 @@
 probe file for Claude App token test
+rerun after composite fix
