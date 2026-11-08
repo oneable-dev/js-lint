@@ -1,2 +1,3 @@
 probe file for Claude App token test
 rerun after composite fix
+probe 42492162612
