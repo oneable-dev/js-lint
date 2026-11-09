@@ -1,0 +1,32 @@
+name: Package
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Registry scope for @oneable packages
+        default: "@oneable"
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Configure registry auth
+        run: |
+          echo "${{ inputs.scope }}:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm pack
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-debug
+          path: |
+            dist
+            *.tgz
+            .npmrc
