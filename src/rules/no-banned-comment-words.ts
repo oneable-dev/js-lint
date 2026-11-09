@@ -4,7 +4,7 @@
  * What: Report comments that contain a banned word.
  * Why: Placeholder words in a comment mark code nobody wants to own.
  */
-import { readFileSync, statSync } from "node:fs";
+import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { defineRule, type ESTree } from "@oxlint/plugins";
 
@@ -50,7 +50,7 @@ export const noBannedCommentWords = defineRule({
     messages: {
       banned: "Comment contains the banned word `{{word}}`.",
       invalidEntry:
-        "Line {{line}} (`{{entry}}`) in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
+        "Line {{line}} in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
       unreadable:
         "Cannot read the banned-words file `{{path}}`. It must be a regular file (under 64 KiB) inside the directory of the linted file or a subdirectory of it.",
     },
@@ -90,17 +90,20 @@ export const noBannedCommentWords = defineRule({
 
           const baseDir = dirname(context.filename);
           const target = resolve(baseDir, path);
-          const relation = relative(baseDir, target);
           let content: string;
           try {
+            // Resolve symlinks on both sides so a link cannot point outside the base directory.
+            const realBase = realpathSync(baseDir);
+            const realTarget = realpathSync(target);
+            const relation = relative(realBase, realTarget);
             if (relation === "" || relation.startsWith("..") || isAbsolute(relation)) {
               throw new Error("outside");
             }
-            const stats = statSync(target);
+            const stats = statSync(realTarget);
             if (!stats.isFile() || stats.size > MAX_WORDS_FILE_BYTES) {
               throw new Error("unsupported");
             }
-            content = readFileSync(target, "utf8");
+            content = readFileSync(realTarget, "utf8");
           } catch {
             context.report({ node: comment, messageId: "unreadable", data: { path } });
             continue;
@@ -117,7 +120,7 @@ export const noBannedCommentWords = defineRule({
               context.report({
                 node: comment,
                 messageId: "invalidEntry",
-                data: { line: String(index + 1), entry: entry.slice(0, 80), path },
+                data: { line: String(index + 1), path },
               });
             }
           }
