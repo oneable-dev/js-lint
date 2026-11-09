@@ -31,8 +31,6 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
     // The directive comments themselves are not reported.
     "// banned-words: hack\nconst a = 1;",
     { code: "// banned-words-file: words.txt\nconst a = 1;", filename },
-    // Declaration files are skipped.
-    { code: "// hack\nexport declare const a: number;", filename: join(dir, "types.d.ts"), options: [{ words: ["hack"] }] },
   ],
   invalid: [
     {

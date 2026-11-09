@@ -3,6 +3,22 @@
  *
  * What: Report comments that contain a banned word.
  * Why: Placeholder words in a comment mark code nobody wants to own.
+ * Source: none
+ * Scope: base preset, all files except `.d.ts` files (turned off by an override). Words come from the `words` option,
+ *   `// banned-words: a, b` directives, and `// banned-words-file: words.txt` directives.
+ * Not covered: Only comments are checked, never code or strings. Matching is by whole word, case-insensitive.
+ *   A words file must be a regular file under 64 KiB inside the linted file's directory or a subdirectory of it,
+ *   with no dot-prefixed path segments; each line must be a plain word. Directive comments are never reported.
+ *
+ * @example Bad
+ * // options: { words: ["hack"] }
+ * // this is a hack
+ * const a = 1;
+ *
+ * @example Good
+ * // options: { words: ["hack"] }
+ * // retries once because the API drops the first request
+ * const a = 1;
  */
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
@@ -54,7 +70,8 @@ export const noBannedCommentWords = defineRule({
     type: "suggestion",
     docs: { description: "Report comments that contain a banned word." },
     messages: {
-      banned: "Comment contains the banned word `{{word}}`.",
+      banned:
+        "Comment contains the banned word `{{word}}`. Describe the actual limitation or the follow-up work instead, or fix the code so the comment is not needed. Do not reword the word or disable this rule.",
       invalidEntry:
         "Line {{line}} in `{{path}}` is not a plain word (`{{entry}}`). Use letters, digits, `-` and `_` only, one word per line.",
       unreadable:
@@ -73,10 +90,6 @@ export const noBannedCommentWords = defineRule({
 
     return {
       Program() {
-        if (context.filename.endsWith(".d.ts")) {
-          return;
-        }
-
         const comments = context.sourceCode.getAllComments();
         const words = [...configured];
         const directives = new Set<ESTree.Comment>();

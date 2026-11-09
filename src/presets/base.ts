@@ -45,5 +45,10 @@ export default {
       files: ["**/*.d.ts", "**/*.{test,spec}.{js,jsx,ts,tsx}"],
       rules: { "oneable/max-params": "off" },
     },
+    {
+      // Declaration files are not ours to word.
+      files: ["**/*.d.ts"],
+      rules: { "oneable/no-banned-comment-words": "off" },
+    },
   ],
 } satisfies OxlintConfig;
