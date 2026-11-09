@@ -62,7 +62,7 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
       code: "// banned-words-file: mixed.txt\n// wip\nconst a = 1;",
       filename,
       errors: [
-        { messageId: "invalidEntry", data: { line: "2", path: "mixed.txt" } },
+        { messageId: "invalidEntry", data: { line: "2", entry: "not a word!", path: "mixed.txt" } },
         { messageId: "banned", data: { word: "wip" } },
       ],
     },

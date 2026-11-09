@@ -50,7 +50,7 @@ export const noBannedCommentWords = defineRule({
     messages: {
       banned: "Comment contains the banned word `{{word}}`.",
       invalidEntry:
-        "Line {{line}} in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
+        "Line {{line}} (`{{entry}}`) in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
       unreadable:
         "Cannot read the banned-words file `{{path}}`. It must be a regular file (under 64 KiB) inside the directory of the linted file or a subdirectory of it.",
     },
@@ -114,7 +114,11 @@ export const noBannedCommentWords = defineRule({
             if (PLAIN_WORD.test(entry)) {
               words.push(entry);
             } else {
-              context.report({ node: comment, messageId: "invalidEntry", data: { line: String(index + 1), path } });
+              context.report({
+                node: comment,
+                messageId: "invalidEntry",
+                data: { line: String(index + 1), entry: entry.slice(0, 80), path },
+              });
             }
           }
         }
