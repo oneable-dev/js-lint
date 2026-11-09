@@ -9,11 +9,12 @@ on:
 jobs:
   review:
     uses: oneable-dev/.github/.github/workflows/claude-review.yml@feat/claude-review-loop
-    # The reusable workflow pushes fix commits, so it needs contents: write.
+    # id-token: write lets the Claude steps get the Claude GitHub App token; fix commits are pushed by claude[bot].
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
+      id-token: write
     with:
       # pnpm 11 matches the lockfile and the minimumReleaseAge settings in pnpm-workspace.yaml.
       # It needs Node >= 22.13; the oxlint config is TypeScript and needs Node type stripping.

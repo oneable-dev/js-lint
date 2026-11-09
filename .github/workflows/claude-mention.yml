@@ -21,8 +21,9 @@ jobs:
   mention:
     uses: oneable-dev/.github/.github/workflows/claude-mention.yml@feat/claude-review-loop
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
       issues: write
+      id-token: write
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
