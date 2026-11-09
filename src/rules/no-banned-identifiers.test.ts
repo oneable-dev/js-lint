@@ -12,18 +12,18 @@ const ruleTester = new RuleTester({
 ruleTester.run("no-banned-identifiers", noBannedIdentifiers, {
   valid: [
     "const tmp = 1;",
-    { code: "const users = [];", options: [{ match: 'name === "tmp"' }] },
-    { code: "const { tmp } = value;", options: [{ match: 'name === "tmp"' }] },
+    { code: "const users = [];", options: [{ match: "^tmp$" }] },
+    { code: "const { tmp } = value;", options: [{ match: "^tmp$" }] },
   ],
   invalid: [
     {
       code: "const tmp = 1;",
-      options: [{ match: 'name === "tmp"' }],
+      options: [{ match: "^tmp$" }],
       errors: [{ messageId: "banned", data: { name: "tmp" } }],
     },
     {
       code: "const a = 1, data = 2;",
-      options: [{ match: 'name.length < 2 || name === "data"' }],
+      options: [{ match: "^(.|data)$" }],
       errors: [{ messageId: "banned", data: { name: "a" } }, { messageId: "banned", data: { name: "data" } }],
     },
   ],
