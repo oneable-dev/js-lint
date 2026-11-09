@@ -17,6 +17,7 @@ export default {
     "oneable/max-params": "error",
     "oneable/prefer-switch": "error",
     "oneable/prefer-static-env": "error",
+    "oneable/no-banned-identifiers": ["warn", { match: 'name === "tmp" || name === "data" || name === "obj"' }],
     "no-else-return": "error",
     "one-var": ["error", "never"],
     "no-multi-assign": "error",
