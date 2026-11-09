@@ -328,7 +328,10 @@ function switchText(chain: Chain, options: Options, sourceCode: SourceCode): { r
   const { branches, discriminant } = chain;
   const first = branches[0]?.statement;
   const last = branches.at(-1)?.statement;
-  if (first === undefined || !last || !discriminant) {
+  if (first === undefined || !last) {
+    return null;
+  }
+  if (!discriminant) {
     return null;
   }
 

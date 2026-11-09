@@ -8,14 +8,14 @@ import { getStaticStringValue, getStaticValue } from "./static-value.ts";
 
 // The expression inside `foo?.bar` or a TypeScript wrapper (`as`, `satisfies`, `!`, `<T>`, `foo<T>`).
 function wrappedExpression(node: ESTree.Node): ESTree.Node | null {
-  if (
+  const isWrapper =
     node.type === "ChainExpression" ||
     node.type === "TSAsExpression" ||
     node.type === "TSSatisfiesExpression" ||
     node.type === "TSNonNullExpression" ||
     node.type === "TSTypeAssertion" ||
-    node.type === "TSInstantiationExpression"
-  ) {
+    node.type === "TSInstantiationExpression";
+  if (isWrapper) {
     return node.expression;
   }
   return null;
