@@ -11,12 +11,12 @@
  *   with no dot-prefixed path segments; each line must be a plain word. Directive comments are never reported.
  *
  * @example Bad
- * // options: { words: ["hack"] }
- * // this is a hack
+ * // options: { words: ["placeholder"] }
+ * // this is a placeholder
  * const a = 1;
  *
  * @example Good
- * // options: { words: ["hack"] }
+ * // options: { words: ["placeholder"] }
  * // retries once because the API drops the first request
  * const a = 1;
  */
