@@ -4,13 +4,14 @@
  * What: Report comments that contain a banned word.
  * Why: Placeholder words in a comment mark code nobody wants to own.
  */
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { readFileSync, statSync } from "node:fs";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { defineRule, type ESTree } from "@oxlint/plugins";
 
 const WORDS_DIRECTIVE = /^\s*banned-words:(.*)$/u;
 const FILE_DIRECTIVE = /^\s*banned-words-file:(.*)$/u;
-const PLAIN_WORD = /^[\p{L}\p{N}_-]+$/u;
+const MAX_WORDS_FILE_BYTES = 64 * 1024;
+const PLAIN_WORD =/^[\p{L}\p{N}_-]+$/u;
 
 function readWords(options: readonly unknown[]): string[] {
   const [first] = options;
@@ -49,8 +50,9 @@ export const noBannedCommentWords = defineRule({
     messages: {
       banned: "Comment contains the banned word `{{word}}`.",
       invalidEntry:
-        "Line `{{entry}}` in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
-      unreadable: "Cannot read the banned-words file `{{path}}`. Check that the path is correct and the file exists.",
+        "Line {{line}} in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
+      unreadable:
+        "Cannot read the banned-words file `{{path}}`. It must be a regular file (under 64 KiB) inside the directory of the linted file or a subdirectory of it.",
     },
     schema: [
       {
@@ -86,14 +88,25 @@ export const noBannedCommentWords = defineRule({
           }
           directives.add(comment);
 
+          const baseDir = dirname(context.filename);
+          const target = resolve(baseDir, path);
+          const relation = relative(baseDir, target);
           let content: string;
           try {
-            content = readFileSync(resolve(dirname(context.filename), path), "utf8");
+            if (relation === "" || relation.startsWith("..") || isAbsolute(relation)) {
+              throw new Error("outside");
+            }
+            const stats = statSync(target);
+            if (!stats.isFile() || stats.size > MAX_WORDS_FILE_BYTES) {
+              throw new Error("unsupported");
+            }
+            content = readFileSync(target, "utf8");
           } catch {
             context.report({ node: comment, messageId: "unreadable", data: { path } });
             continue;
           }
-          for (const line of content.split("\n")) {
+          const lines = content.split("\n");
+          for (const [index, line] of lines.entries()) {
             const entry = line.trim();
             if (entry === "") {
               continue;
@@ -101,7 +114,7 @@ export const noBannedCommentWords = defineRule({
             if (PLAIN_WORD.test(entry)) {
               words.push(entry);
             } else {
-              context.report({ node: comment, messageId: "invalidEntry", data: { entry, path } });
+              context.report({ node: comment, messageId: "invalidEntry", data: { line: String(index + 1), path } });
             }
           }
         }

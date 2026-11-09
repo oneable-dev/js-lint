@@ -62,7 +62,7 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
       code: "// banned-words-file: mixed.txt\n// wip\nconst a = 1;",
       filename,
       errors: [
-        { messageId: "invalidEntry", data: { entry: "not a word!", path: "mixed.txt" } },
+        { messageId: "invalidEntry", data: { line: "2", path: "mixed.txt" } },
         { messageId: "banned", data: { word: "wip" } },
       ],
     },
@@ -70,6 +70,16 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
       code: "// banned-words-file: missing.txt\nconst a = 1;",
       filename,
       errors: [{ messageId: "unreadable", data: { path: "missing.txt" } }],
+    },
+    {
+      code: "// banned-words-file: ../words.txt\nconst a = 1;",
+      filename: join(dir, "sub", "source.ts"),
+      errors: [{ messageId: "unreadable", data: { path: "../words.txt" } }],
+    },
+    {
+      code: "// banned-words-file: /etc/passwd\nconst a = 1;",
+      filename,
+      errors: [{ messageId: "unreadable", data: { path: "/etc/passwd" } }],
     },
   ],
 });
