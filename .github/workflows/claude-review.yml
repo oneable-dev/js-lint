@@ -8,7 +8,7 @@ on:
 
 jobs:
   review:
-    uses: oneable-dev/.github/.github/workflows/claude-review.yml@feat/claude-review-loop
+    uses: oneable-dev/.github/.github/workflows/claude-review.yml@main
     # id-token: write lets the Claude steps get the Claude GitHub App token; fix commits are pushed by claude[bot].
     permissions:
       contents: read
