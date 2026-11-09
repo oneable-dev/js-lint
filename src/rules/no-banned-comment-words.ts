@@ -21,6 +21,12 @@ function readWords(options: readonly unknown[]): string[] {
   return first.words.filter((word): word is string => typeof word === "string" && word !== "");
 }
 
+// Make a words-file line safe to quote in a message: no control characters or backticks, bounded length.
+function sanitizeEntry(entry: string): string {
+  const cleaned = entry.replaceAll(/[\p{Cc}\p{Cf}`]/gu, "?");
+  return cleaned.length > 40 ? `${cleaned.slice(0, 40)}...` : cleaned;
+}
+
 function escapeRegExp(text: string): string {
   return text.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`);
 }
@@ -50,7 +56,7 @@ export const noBannedCommentWords = defineRule({
     messages: {
       banned: "Comment contains the banned word `{{word}}`.",
       invalidEntry:
-        "Line {{line}} in `{{path}}` is not a plain word. Use letters, digits, `-` and `_` only, one word per line.",
+        "Line {{line}} in `{{path}}` is not a plain word (`{{entry}}`). Use letters, digits, `-` and `_` only, one word per line.",
       unreadable:
         "Cannot read the banned-words file `{{path}}`. It must be a regular file (under 64 KiB) inside the directory of the linted file or a subdirectory of it.",
     },
@@ -123,6 +129,7 @@ export const noBannedCommentWords = defineRule({
                 data: {
                   line: String(index + 1),
                   path,
+                  entry: sanitizeEntry(entry),
                 },
               });
             }
