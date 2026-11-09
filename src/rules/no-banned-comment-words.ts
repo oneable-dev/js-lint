@@ -3,6 +3,19 @@
  *
  * What: Report comments that contain a banned word.
  * Why: Placeholder words in a comment mark code nobody wants to own.
+ * Source: none
+ * Scope: base preset, all files
+ * Not covered: Matching is case-insensitive and whole-word only, so a word inside a longer word is
+ *   ignored. Only the first banned word in each comment is reported. `// banned-words: a, b` directive
+ *   comments add words for their own file and are never reported themselves.
+ *
+ * @example Bad
+ * // with options { words: ["wip"] }
+ * // wip: fix later
+ *
+ * @example Good
+ * // with options { words: ["wip"] }
+ * // wiper blades are replaced when worn
  */
 import { defineRule, type ESTree } from "@oxlint/plugins";
 
@@ -33,7 +46,8 @@ export const noBannedCommentWords = defineRule({
     type: "suggestion",
     docs: { description: "Report comments that contain a banned word." },
     messages: {
-      banned: "Comment contains the banned word `{{word}}`.",
+      banned:
+        "Comment contains the banned word `{{word}}`. Fix the code the comment describes, or rewrite the comment to explain why the code is written this way without using `{{word}}`.",
     },
     schema: [
       {
