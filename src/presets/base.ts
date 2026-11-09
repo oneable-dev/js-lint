@@ -15,6 +15,7 @@ export default {
     "no-use-before-define": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     "oneable/max-params": "error",
+    "oneable/prefer-named-condition": "error",
     "oneable/prefer-switch": "error",
     "oneable/prefer-static-env": "error",
     "no-else-return": "error",

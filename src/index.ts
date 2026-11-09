@@ -5,6 +5,7 @@ import { noDeclarationMerging } from "./rules/no-declaration-merging.ts";
 import { noRawText } from "./rules/no-raw-text.ts";
 import { preferFunctionalUpdate } from "./rules/prefer-functional-update.ts";
 import { preferInterfaceExtends } from "./rules/prefer-interface-extends.ts";
+import { preferNamedCondition } from "./rules/prefer-named-condition.ts";
 import { preferStaticEnv } from "./rules/prefer-static-env.ts";
 import { preferSwitch } from "./rules/prefer-switch.ts";
 
@@ -17,6 +18,7 @@ export default definePlugin({
     "no-raw-text": noRawText,
     "prefer-functional-update": preferFunctionalUpdate,
     "prefer-interface-extends": preferInterfaceExtends,
+    "prefer-named-condition": preferNamedCondition,
     "prefer-static-env": preferStaticEnv,
     "prefer-switch": preferSwitch,
   },
