@@ -17,7 +17,7 @@ export default {
     "oneable/max-params": "error",
     "oneable/prefer-switch": "error",
     "oneable/prefer-static-env": "error",
-    "oneable/no-banned-comment-words": ["warn", { words: ["hack", "kludge"] }],
+    "oneable/no-banned-comment-words": ["error", { words: ["hack", "kludge"] }],
     "no-else-return": "error",
     "one-var": ["error", "never"],
     "no-multi-assign": "error",

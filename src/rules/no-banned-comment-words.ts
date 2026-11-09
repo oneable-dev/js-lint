@@ -57,7 +57,8 @@ export const noBannedCommentWords = defineRule({
           return;
         }
 
-        const banned = new RegExp(`\\b(?:${words.join("|")})\\b`, "iu");
+        const escaped = words.map((word) => word.replaceAll(/[.*+?^${}()|[\]\\]/gu, String.raw`\$&`));
+        const banned = new RegExp(`(?<![\\p{L}\\p{N}_])(?:${escaped.join("|")})(?![\\p{L}\\p{N}_])`, "iu");
         for (const comment of comments) {
           if (directiveWords(comment)) {
             continue;

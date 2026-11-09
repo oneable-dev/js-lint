@@ -20,6 +20,9 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
     { code: "const hack = 1;", options: [{ words: ["hack"] }] },
     // The directive comment itself is not reported.
     "// banned-words: hack\nconst a = 1;",
+    // Regex metacharacters in a directive word do not crash the rule or act as a pattern.
+    "// banned-words: foo(\n// foo\nconst a = 1;",
+    { code: "// axb\nconst a = 1;", options: [{ words: ["a.b"] }] },
   ],
   invalid: [
     {
@@ -40,6 +43,15 @@ ruleTester.run("no-banned-comment-words", noBannedCommentWords, {
       code: "// banned-words: temp\n// hack and temp\nconst a = 1;",
       options: [{ words: ["hack"] }],
       errors: [{ messageId: "banned", data: { word: "hack" } }],
+    },
+    {
+      code: "// banned-words: c++, @todo\n// uses c++ here\nconst a = 1;",
+      errors: [{ messageId: "banned", data: { word: "c++" } }],
+    },
+    {
+      code: "// @todo later\nconst a = 1;",
+      options: [{ words: ["@todo"] }],
+      errors: [{ messageId: "banned", data: { word: "@todo" } }],
     },
   ],
 });
