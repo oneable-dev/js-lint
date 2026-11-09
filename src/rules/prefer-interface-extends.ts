@@ -66,7 +66,10 @@ export const preferInterfaceExtends = defineRule({
           }
 
           const name = referenceName(member.typeName);
-          if (name !== undefined && (typeParameters.has(name) || nonObjectAliases.has(name))) {
+          if (name === undefined) {
+            return true;
+          }
+          if (typeParameters.has(name) || nonObjectAliases.has(name)) {
             return false;
           }
           return true;

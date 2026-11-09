@@ -35,7 +35,10 @@ function findVariable(scope: Scope | null, name: string): Variable | undefined {
 // `const NAME = <init>` with a single definition.
 function constInitializer(variable: Variable): ESTree.Expression | null {
   const [definition] = variable.defs;
-  if (variable.defs.length !== 1 || definition === undefined || definition.type !== "Variable") {
+  if (variable.defs.length !== 1 || definition === undefined) {
+    return null;
+  }
+  if (definition.type !== "Variable") {
     return null;
   }
   if (definition.parent?.type !== "VariableDeclaration" || definition.parent.kind !== "const") {
@@ -71,10 +74,12 @@ function unaryValue(operator: string, value: unknown): StaticValue | null {
   if (operator === "void") {
     return { value: undefined };
   }
-  if (operator === "-" && (typeof value === "number" || typeof value === "bigint")) {
+  const isNumeric = typeof value === "number" || typeof value === "bigint";
+  const isNumberOrString = typeof value === "number" || typeof value === "string";
+  if (operator === "-" && isNumeric) {
     return { value: -value };
   }
-  if (operator === "+" && (typeof value === "number" || typeof value === "string")) {
+  if (operator === "+" && isNumberOrString) {
     return { value: Number(value) };
   }
   if (operator === "~" && typeof value === "number") {
@@ -109,13 +114,15 @@ function binaryValue(operator: string, left: unknown, right: unknown): StaticVal
   if (operator === "!==") {
     return { value: left !== right };
   }
-  if (operator === "+" && typeof left === "number" && typeof right === "number") {
+  const areNumbers = typeof left === "number" && typeof right === "number";
+  const hasString = typeof left === "string" || typeof right === "string";
+  if (operator === "+" && areNumbers) {
     return { value: left + right };
   }
-  if (operator === "+" && (typeof left === "string" || typeof right === "string")) {
+  if (operator === "+" && hasString) {
     return { value: `${String(left)}${String(right)}` };
   }
-  if (typeof left === "number" && typeof right === "number") {
+  if (areNumbers) {
     return arithmetic(operator, left, right);
   }
   return null;
@@ -182,12 +189,12 @@ function getStaticValue(node: ESTree.Node, scope: Scope | null): StaticValue | n
     const right = getStaticValue(node.right, scope);
     return left && right ? binaryValue(node.operator, left.value, right.value) : null;
   }
-  if (
+  const isTypeScriptWrapper =
     node.type === "TSAsExpression" ||
     node.type === "TSSatisfiesExpression" ||
     node.type === "TSNonNullExpression" ||
-    node.type === "TSTypeAssertion"
-  ) {
+    node.type === "TSTypeAssertion";
+  if (isTypeScriptWrapper) {
     return getStaticValue(node.expression, scope);
   }
   return null;
