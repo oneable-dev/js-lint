@@ -46,7 +46,9 @@ function parentName(parent: ESTree.Node | null): string | undefined {
   if (parent.type === "VariableDeclarator") {
     return parent.id.type === "Identifier" ? parent.id.name : undefined;
   }
-  if (parent.type === "MethodDefinition" || parent.type === "PropertyDefinition" || parent.type === "Property") {
+  const isKeyedMember =
+    parent.type === "MethodDefinition" || parent.type === "PropertyDefinition" || parent.type === "Property";
+  if (isKeyedMember) {
     return keyName(parent.key);
   }
   if (parent.type === "TSTypeAliasDeclaration") {
@@ -89,7 +91,10 @@ function paramName(param: ESTree.Node): string {
 
 function readMax(options: readonly unknown[]): number {
   const [first] = options;
-  if (typeof first !== "object" || first === null || !("max" in first)) {
+  if (typeof first !== "object" || first === null) {
+    return DEFAULT_MAX;
+  }
+  if (!("max" in first)) {
     return DEFAULT_MAX;
   }
   return typeof first.max === "number" ? first.max : DEFAULT_MAX;

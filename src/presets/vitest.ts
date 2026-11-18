@@ -11,6 +11,8 @@ export default {
         "vitest/expect-expect": "error",
         // Partial mocks need `{ ... } as unknown as Service`.
         "typescript/no-unsafe-type-assertion": "off",
+        // A `describe` block wraps every case in one function, so its length is not a complexity signal.
+        "max-lines-per-function": "off",
       },
     },
   ],

@@ -20,7 +20,7 @@
  * const [count, setCount] = useState(0);
  * setCount((count) => count + 1);
  */
-import { defineRule, type ESTree } from "@oxlint/plugins";
+import { defineRule, type ESTree, type Reference, type SourceCode, type Variable } from "@oxlint/plugins";
 
 // `useState(...)`, `React.useState(...)`
 function isUseStateCall(node: ESTree.Node | null): boolean {
@@ -45,6 +45,50 @@ function isFunction(node: ESTree.Node): boolean {
   return node.type === "ArrowFunctionExpression" || node.type === "FunctionExpression";
 }
 
+interface StateBindings {
+  state: Variable;
+  setter: Variable;
+}
+
+// The `state` and `setter` variables of `const [state, setter] = useState(...)`.
+function findStateBindings(node: ESTree.VariableDeclarator, sourceCode: SourceCode): StateBindings | null {
+  if (node.id.type !== "ArrayPattern" || !isUseStateCall(node.init)) {
+    return null;
+  }
+  const [stateNode, setterNode] = node.id.elements;
+  if (stateNode?.type !== "Identifier" || setterNode?.type !== "Identifier") {
+    return null;
+  }
+
+  const variables = sourceCode.getDeclaredVariables(node);
+  const state = variables.find((variable) => variable.name === stateNode.name);
+  const setter = variables.find((variable) => variable.name === setterNode.name);
+  return state && setter ? { state, setter } : null;
+}
+
+// The call `setter(...)` when `reference` is its callee.
+function getCallOf(reference: Reference): ESTree.CallExpression | null {
+  const call = reference.identifier.parent;
+  return call?.type === "CallExpression" && call.callee === reference.identifier ? call : null;
+}
+
+// The setter argument when it computes the next state from the current one (and is not an updater).
+function getStateDerivedArgument(call: ESTree.CallExpression, state: Variable): ESTree.Expression | null {
+  const [argument] = call.arguments;
+  if (argument === undefined || argument.type === "SpreadElement") {
+    return null;
+  }
+  if (isFunction(argument)) {
+    return null;
+  }
+  // `setCount(count)` sets the state to itself; it does not compute anything from it.
+  if (argument.type === "Identifier" && argument.name === state.name) {
+    return null;
+  }
+  const readsState = state.references.some((stateReference) => isWithin(stateReference.identifier, argument));
+  return readsState ? argument : null;
+}
+
 export const preferFunctionalUpdate = defineRule({
   meta: {
     type: "problem",
@@ -62,57 +106,38 @@ export const preferFunctionalUpdate = defineRule({
   create(context) {
     const { sourceCode } = context;
 
+    function report(call: ESTree.CallExpression, argument: ESTree.Expression, { state, setter }: StateBindings) {
+      const data = { setter: setter.name, state: state.name };
+      const text = sourceCode.getText(argument);
+      // An arrow body starting with `{` would be parsed as a block.
+      const body = text.startsWith("{") ? `(${text})` : text;
+      context.report({
+        node: call,
+        messageId: "preferFunctionalUpdate",
+        data,
+        suggest: [
+          {
+            messageId: "useUpdater",
+            data,
+            fix: (fixer) => fixer.replaceText(argument, `(${state.name}) => ${body}`),
+          },
+        ],
+      });
+    }
+
     return {
       VariableDeclarator(node) {
-        if (node.id.type !== "ArrayPattern" || !isUseStateCall(node.init)) {
-          return;
-        }
-        const [stateNode, setterNode] = node.id.elements;
-        if (stateNode?.type !== "Identifier" || setterNode?.type !== "Identifier") {
+        const bindings = findStateBindings(node, sourceCode);
+        if (!bindings) {
           return;
         }
 
-        const variables = sourceCode.getDeclaredVariables(node);
-        const state = variables.find((variable) => variable.name === stateNode.name);
-        const setter = variables.find((variable) => variable.name === setterNode.name);
-        if (!state || !setter) {
-          return;
-        }
-
-        for (const reference of setter.references) {
-          const call = reference.identifier.parent;
-          if (call?.type !== "CallExpression" || call.callee !== reference.identifier) {
-            continue;
+        for (const reference of bindings.setter.references) {
+          const call = getCallOf(reference);
+          const argument = call && getStateDerivedArgument(call, bindings.state);
+          if (call && argument) {
+            report(call, argument, bindings);
           }
-          const [argument] = call.arguments;
-          if (argument === undefined || argument.type === "SpreadElement" || isFunction(argument)) {
-            continue;
-          }
-          // `setCount(count)` sets the state to itself; it does not compute anything from it.
-          if (argument.type === "Identifier" && argument.name === state.name) {
-            continue;
-          }
-          const readsState = state.references.some((stateReference) => isWithin(stateReference.identifier, argument));
-          if (!readsState) {
-            continue;
-          }
-
-          const data = { setter: setter.name, state: state.name };
-          const text = sourceCode.getText(argument);
-          // An arrow body starting with `{` would be parsed as a block.
-          const body = text.startsWith("{") ? `(${text})` : text;
-          context.report({
-            node: call,
-            messageId: "preferFunctionalUpdate",
-            data,
-            suggest: [
-              {
-                messageId: "useUpdater",
-                data,
-                fix: (fixer) => fixer.replaceText(argument, `(${state.name}) => ${body}`),
-              },
-            ],
-          });
         }
       },
     };

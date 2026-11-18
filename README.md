@@ -18,6 +18,8 @@ import vitest from "@oneable/js-lint/vitest";
 export default defineConfig({ extends: [reactNative, vitest] });
 ```
 
+Put `vitest` last in `extends`: later entries win, so its test-file overrides take precedence over the preset before it.
+
 | Preset | Includes |
 |---|---|
 | `@oneable/js-lint/base` | JS rules |

@@ -15,6 +15,7 @@ export default {
     "no-use-before-define": "error",
     "unicorn/no-abusive-eslint-disable": "error",
     "oneable/max-params": "error",
+    "oneable/prefer-named-condition": "error",
     "oneable/prefer-switch": "error",
     "oneable/prefer-static-env": "error",
     "no-else-return": "error",
@@ -23,6 +24,10 @@ export default {
     "no-sequences": "error",
     "no-nested-ternary": "error",
     "max-depth": ["error", 3],
+    // "warn" because the limit is a heuristic: valid code can exceed it, so it should not fail lint.
+    "max-lines": ["warn", { max: 1000, skipBlankLines: true, skipComments: true }],
+    complexity: ["error", 15],
+    "max-lines-per-function": ["error", { max: 80, skipBlankLines: true, skipComments: true }],
     curly: ["error", "all"],
     "no-console": ["error", { allow: ["warn", "error"] }],
     "no-empty": "error",

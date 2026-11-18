@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@oxlint/plugins':
-        specifier: 1.92.0
+        specifier: ^1.92.0
         version: 1.92.0
     devDependencies:
       '@types/node':

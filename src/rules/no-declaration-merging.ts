@@ -31,24 +31,26 @@ interface Entry {
 
 type StatementList = Array<ESTree.Directive | ESTree.Statement>;
 
-// Every declaration kind, so a new kind in the AST types fails to compile here.
-const DECLARATION_TYPES: Record<ESTree.Declaration["type"], true> = {
-  VariableDeclaration: true,
-  FunctionDeclaration: true,
-  FunctionExpression: true,
-  TSDeclareFunction: true,
-  TSEmptyBodyFunctionExpression: true,
-  ClassDeclaration: true,
-  ClassExpression: true,
-  TSTypeAliasDeclaration: true,
-  TSInterfaceDeclaration: true,
-  TSEnumDeclaration: true,
-  TSModuleDeclaration: true,
-  TSImportEqualsDeclaration: true,
+// Every declaration type, so a new type in the AST types fails to compile here. The value is the
+// kind it declares, or null when it declares no checked name: expressions only appear here as
+// `export default`, and namespaces may merge with functions and classes by design.
+const DECLARED_KIND: Record<ESTree.Declaration["type"], Kind | null> = {
+  VariableDeclaration: "variable",
+  FunctionDeclaration: "function",
+  FunctionExpression: null,
+  TSDeclareFunction: "function",
+  TSEmptyBodyFunctionExpression: null,
+  ClassDeclaration: "class",
+  ClassExpression: null,
+  TSTypeAliasDeclaration: "type",
+  TSInterfaceDeclaration: "interface",
+  TSEnumDeclaration: "enum",
+  TSModuleDeclaration: null,
+  TSImportEqualsDeclaration: null,
 };
 
 function isDeclaration(node: ESTree.Node): node is ESTree.Declaration {
-  return Object.hasOwn(DECLARATION_TYPES, node.type);
+  return Object.hasOwn(DECLARED_KIND, node.type);
 }
 
 function unwrapExport(statement: ESTree.Node): ESTree.Node | null {
@@ -61,43 +63,21 @@ function unwrapExport(statement: ESTree.Node): ESTree.Node | null {
   return statement;
 }
 
+// Identifiers a declaration introduces. Destructured variables are skipped.
+function declaredIdentifiers(declaration: ESTree.Declaration): ESTree.BindingIdentifier[] {
+  if (declaration.type === "VariableDeclaration") {
+    return declaration.declarations.flatMap(({ id }) => (id.type === "Identifier" ? [id] : []));
+  }
+  return declaration.id?.type === "Identifier" ? [declaration.id] : [];
+}
+
 function collect(declaration: ESTree.Declaration, add: (name: string, entry: Entry) => void) {
-  switch (declaration.type) {
-    case "TSInterfaceDeclaration":
-      add(declaration.id.name, { kind: "interface", node: declaration.id });
-      return;
-    case "TSTypeAliasDeclaration":
-      add(declaration.id.name, { kind: "type", node: declaration.id });
-      return;
-    case "TSEnumDeclaration":
-      add(declaration.id.name, { kind: "enum", node: declaration.id });
-      return;
-    case "ClassDeclaration":
-      if (declaration.id) {
-        add(declaration.id.name, { kind: "class", node: declaration.id });
-      }
-      return;
-    case "FunctionDeclaration":
-    case "TSDeclareFunction":
-      if (declaration.id) {
-        add(declaration.id.name, { kind: "function", node: declaration.id });
-      }
-      return;
-    case "VariableDeclaration":
-      for (const declarator of declaration.declarations) {
-        if (declarator.id.type === "Identifier") {
-          add(declarator.id.name, { kind: "variable", node: declarator.id });
-        }
-      }
-      return;
-    // Expressions only appear here as `export default`, where they declare no name.
-    case "FunctionExpression":
-    case "TSEmptyBodyFunctionExpression":
-    case "ClassExpression":
-    // Namespaces may merge with functions and classes by design; not checked.
-    case "TSModuleDeclaration":
-    case "TSImportEqualsDeclaration":
-      return;
+  const kind = DECLARED_KIND[declaration.type];
+  if (kind === null) {
+    return;
+  }
+  for (const id of declaredIdentifiers(declaration)) {
+    add(id.name, { kind, node: id });
   }
 }
 
