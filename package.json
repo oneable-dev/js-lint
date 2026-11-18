@@ -43,11 +43,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@oxlint/plugins": "1.92.0"
+    "@oxlint/plugins": "^1.92.0"
   },
   "peerDependencies": {
     "oxlint": "^1.92.0",
     "oxlint-tsgolint": "^7.0.2006"
+  },
+  "peerDependenciesMeta": {
+    "oxlint-tsgolint": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
