@@ -12,4 +12,14 @@ export default {
     "oneable/destructure-props": "error",
     "oneable/prefer-functional-update": "error",
   },
+  overrides: [
+    {
+      // JSX markup lengthens components. Tests are excluded so the vitest preset's `off` wins regardless of `extends` order.
+      files: ["**/*.{tsx,jsx}"],
+      excludeFiles: ["**/*.{test,spec}.{ts,tsx}"],
+      rules: {
+        "max-lines-per-function": ["error", { max: 120, skipBlankLines: true, skipComments: true }],
+      },
+    },
+  ],
 } satisfies OxlintConfig;
