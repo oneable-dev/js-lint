@@ -1,7 +1,8 @@
 name: CI
 
-# Runs the same checks the Claude Review workflow uses (pnpm lint, typecheck, test), so a failure
-# blocks the PR without depending on an agent to run them.
+# Runs the checks the Claude Review workflow uses (pnpm lint, typecheck, test), so a failure blocks
+# the PR without depending on an agent to run them. It also runs checks only CI has: publint on the
+# package and, on PRs, a changeset check.
 on:
   pull_request:
   push:
@@ -20,6 +21,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # `changeset status --since` needs the base branch history.
+          fetch-depth: 0
 
       # pnpm 11 matches the lockfile and the minimumReleaseAge settings in pnpm-workspace.yaml.
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
@@ -43,3 +47,16 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # Lint already built dist, which publint inspects.
+      - name: Check package
+        run: pnpm exec publint --strict
+
+      # Fails when a PR changes src/ without a changeset. To fix, add a `.changeset/*.md` file
+      # (`pnpm changeset`), or, if the src change needs no release, run `pnpm changeset --empty`.
+      # The Version Packages PR consumes the changesets, so it is skipped.
+      - name: Check changeset
+        if: github.event_name == 'pull_request' && github.head_ref != 'changeset-release/main'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: pnpm exec changeset status --since="origin/$BASE_REF"

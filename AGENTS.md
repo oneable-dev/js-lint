@@ -10,6 +10,7 @@ This project turns rules that used to live in agent skills into oxlint JS plugin
 - Custom JS rules cannot use type information. Type-aware checks are only possible with oxlint's built-in rules (via `oxlint-tsgolint`).
 - `options` (`typeAware`, `reportUnusedDisableDirectives`) work from presets through `extends` (verified with oxlint 1.92.0), even though the schema says "root configuration only". They do not work in nested configs inside subdirectories.
 - Presets reference this plugin by package name (`jsPlugins: ["@oneable/js-lint"]`), not by path, so they work from `node_modules`.
+- What gets published is the `pnpm pack` result: `dist` plus README and LICENSE (`files: ["dist"]`). `prepack` deletes `dist` and rebuilds it. Check the package with `pnpm exec publint --strict`.
 
 ## Presets
 
@@ -52,3 +53,21 @@ Other rules:
 - Add a `fix` only when the fixed code is guaranteed to behave the same. Use `suggest` when it usually does but cannot be proven (e.g. a getter may be read a different number of times). Otherwise report without a fix, and make the message say how to fix it.
 - Code ported from another project keeps a comment naming the project, version, and license.
 - Every rule needs a test file with both `valid` and `invalid` cases.
+
+## Releasing
+
+- Add a changeset for every `src` change consumers can see: a rule added, changed or removed, a preset change, or a message change. `pnpm changeset` is interactive, so write `.changeset/<kebab-name>.md` directly. Use this form, where the summary is one line from the consumer's point of view and goes into the CHANGELOG:
+
+  ```md
+  ---
+  "@oneable/js-lint": patch
+  ---
+
+  Fix `<rule-name>` reporting <valid code pattern>.
+  ```
+
+- For a `src` change that needs no release (tests only, refactors), run `pnpm changeset --empty`.
+- Do not edit the `version` field or `CHANGELOG.md` by hand. The "Version Packages" PR updates both.
+- While the version is `0.x`, a breaking change is `minor` and everything else is `patch`.
+  - Breaking: adding an `error` rule to a preset, making an existing rule report more, removing or renaming a rule or preset entry point, or raising the minimum version in `peerDependencies`.
+  - Not breaking: fixing a false positive, reporting less, or documentation changes.

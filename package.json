@@ -1,7 +1,22 @@
 {
   "name": "@oneable/js-lint",
   "version": "0.0.0",
-  "private": true,
+  "description": "oxlint rules that enforce what agent skills used to ask for.",
+  "keywords": [
+    "oxlint",
+    "oxlint-plugin",
+    "lint",
+    "linter"
+  ],
+  "homepage": "https://github.com/oneable-dev/js-lint#readme",
+  "bugs": {
+    "url": "https://github.com/oneable-dev/js-lint/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oneable-dev/js-lint.git"
+  },
+  "license": "MIT",
   "type": "module",
   "files": [
     "dist"
@@ -36,7 +51,14 @@
       "default": "./dist/presets/vitest.js"
     }
   },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepack": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && pnpm build",
     "build": "tsc -p tsconfig.build.json",
     "lint": "pnpm build && oxlint",
     "test": "vitest run",
@@ -55,9 +77,12 @@
     }
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@types/node": "^26.6.6",
     "oxlint": "1.92.0",
     "oxlint-tsgolint": "^7.0.2006",
+    "publint": "^0.3.25",
     "typescript": "^7.0.2",
     "vitest": "5.1.0"
   }
