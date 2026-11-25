@@ -1,6 +1,6 @@
 {
   "name": "@oneable/js-lint",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "oxlint rules that enforce what agent skills used to ask for.",
   "keywords": [
     "oxlint",
