@@ -1,7 +1,9 @@
 import { definePlugin } from "@oxlint/plugins";
 import { destructureProps } from "./rules/destructure-props.ts";
 import { maxParams } from "./rules/max-params.ts";
+import { noConditionalRenderFalsy } from "./rules/no-conditional-render-falsy.ts";
 import { noDeclarationMerging } from "./rules/no-declaration-merging.ts";
+import { noNestedVirtualizedList } from "./rules/no-nested-virtualized-list.ts";
 import { noRawText } from "./rules/no-raw-text.ts";
 import { preferFunctionalUpdate } from "./rules/prefer-functional-update.ts";
 import { preferInterfaceExtends } from "./rules/prefer-interface-extends.ts";
@@ -14,7 +16,9 @@ export default definePlugin({
   rules: {
     "destructure-props": destructureProps,
     "max-params": maxParams,
+    "no-conditional-render-falsy": noConditionalRenderFalsy,
     "no-declaration-merging": noDeclarationMerging,
+    "no-nested-virtualized-list": noNestedVirtualizedList,
     "no-raw-text": noRawText,
     "prefer-functional-update": preferFunctionalUpdate,
     "prefer-interface-extends": preferInterfaceExtends,

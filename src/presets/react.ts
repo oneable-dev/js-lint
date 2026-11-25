@@ -9,6 +9,8 @@ export default {
     "react/exhaustive-deps": "error",
     "react/jsx-key": "error",
     "react/no-array-index-key": "error",
+    // Inline functions passed to `render*` props (e.g. `renderItem`) are allowed by default.
+    "react/no-unstable-nested-components": "error",
     "oneable/destructure-props": "error",
     "oneable/prefer-functional-update": "error",
   },

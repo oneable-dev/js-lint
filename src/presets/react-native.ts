@@ -6,6 +6,8 @@ export default {
   extends: [react],
   rules: {
     "oneable/no-raw-text": "error",
+    "oneable/no-conditional-render-falsy": "error",
+    "oneable/no-nested-virtualized-list": "error",
     "no-restricted-imports": [
       "error",
       {
